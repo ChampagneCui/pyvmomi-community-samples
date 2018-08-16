@@ -23,6 +23,7 @@ import atexit
 from pyVim import connect
 from pyVmomi import vmodl
 from pyVmomi import vim
+import ssl
 
 import tools.cli as cli
 
@@ -73,11 +74,16 @@ def main():
                                                          pwd=args.password,
                                                          port=int(args.port))
         else:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+            context.verify_mode = ssl.CERT_NONE
             service_instance = connect.SmartConnect(host=args.host,
                                                     user=args.user,
                                                     pwd=args.password,
-                                                    port=int(args.port))
+                                                    port=int(args.port),
+                                                    sslContext=context)
 
+	print(dir(service_instance))
+        exit()
         atexit.register(connect.Disconnect, service_instance)
 
         content = service_instance.RetrieveContent()
